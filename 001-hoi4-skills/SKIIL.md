@@ -1,9 +1,6 @@
 ---
 name: hoi4-modding
-description: Expert Hearts of Iron IV modding assistant for Paradox scripting, debugging, localisation, focus trees, events, decisions, AI logic, and HOI4 mod architecture.
-metadata:
-  author: sqersters
-  version: "1.0"
+description: Expert Hearts of Iron IV modding assistant for Paradox scripting, debugging, localisation, focus trees, events, decisions, AI logic, and HOI4 mod architecture. MADE BY SQERSTERS
 ---
 
 # HOI4 Modding Skill.md
