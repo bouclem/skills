@@ -1,0 +1,153 @@
+{
+  "name": "kiro-skills-loader",
+  "displayName": "Kiro Skills Loader",
+  "description": "Hierarchical skill discovery for Kiro/VS Code with auto-activation by keyword matching, like steering files.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "Kiro Skills Loader",
+      "properties": {
+        "kiroSkills.skillsRoot": {
+          "type": "string",
+          "default": "SKILLS",
+          "description": "Workspace-relative path to the skills root folder."
+        },
+        "kiroSkills.companionFolders": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [
+            "references", "examples", "tutorials", "scripts", "evals",
+            "assets", "resources", "templates", "docs", "fixtures", "samples"
+          ],
+          "description": "Folder names treated as companion content next to SKILL.md."
+        },
+        "kiroSkills.autoSteering": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-toggle steering for keyword-matched skills when the trigger word is present in the document."
+        },
+        "kiroSkills.triggerWord": {
+          "type": "string",
+          "default": "SKILLS",
+          "description": "Auto-activation only fires when this exact word appears in the document. Whole-word, case-sensitive."
+        },
+        "kiroSkills.steeringInclusion": {
+          "type": "string",
+          "enum": ["fileMatch", "manual", "always"],
+          "default": "fileMatch",
+          "description": "How generated steering files are included. fileMatch = activate when matching files are open; manual = via #context; always = always-on."
+        },
+        "kiroSkills.maxKeywordChars": {
+          "type": "number",
+          "default": 6000,
+          "description": "Maximum characters of SKILL.md content embedded in a steering snippet."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "kiroSkills.refresh",
+        "title": "Skills: Refresh Index",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "kiroSkills.openSkill",
+        "title": "Skills: Open SKILL.md"
+      },
+      {
+        "command": "kiroSkills.activateSkill",
+        "title": "Skills: Activate (write steering)"
+      },
+      {
+        "command": "kiroSkills.deactivateSkill",
+        "title": "Skills: Deactivate (remove steering)"
+      },
+      {
+        "command": "kiroSkills.regenerateSteering",
+        "title": "Skills: Regenerate All Steering Files"
+      },
+      {
+        "command": "kiroSkills.searchByKeyword",
+        "title": "Skills: Search by Keyword"
+      },
+      {
+        "command": "kiroSkills.toggleForActiveFile",
+        "title": "Skills: Toggle for Active File",
+        "icon": "$(symbol-event)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "kiroSkills.toggleForActiveFile",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "editorTextFocus"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "kiroSkills",
+          "title": "Skills",
+          "icon": "$(book)"
+        }
+      ]
+    },
+    "views": {
+      "kiroSkills": [
+        {
+          "id": "kiroSkills.tree",
+          "name": "Skill Library"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "kiroSkills.refresh",
+          "when": "view == kiroSkills.tree",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "kiroSkills.openSkill",
+          "when": "view == kiroSkills.tree && viewItem == skill",
+          "group": "1_open"
+        },
+        {
+          "command": "kiroSkills.activateSkill",
+          "when": "view == kiroSkills.tree && viewItem == skill",
+          "group": "2_activate"
+        },
+        {
+          "command": "kiroSkills.deactivateSkill",
+          "when": "view == kiroSkills.tree && viewItem == skill-active",
+          "group": "2_activate"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package --no-dependencies --allow-missing-repository --out kiro-skills-loader.vsix"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.0",
+    "@types/vscode": "1.85.0",
+    "@vscode/vsce": "2.24.0",
+    "typescript": "5.4.5"
+  }
+}
