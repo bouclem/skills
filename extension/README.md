@@ -1,80 +1,72 @@
 # Kiro Skills Loader
 
-A VS Code / Kiro extension that discovers Agent Skills laid out in deep, hierarchical folders (categories and subcategories), indexes their companion files, and auto-activates relevant skills as steering files — the same way Kiro picks up `.kiro/steering/*.md`.
+A VS Code / Kiro extension that maintains a hierarchical skill library and **installs** skills into Kiro's flat skills folder so Kiro can auto-activate them by description matching.
 
-## Folder layout it understands
+## Three folders, three jobs
 
-Any depth is fine. The extension walks the configured root and treats every folder containing a `SKILL.md` as a skill.
+| Folder | Layout | Purpose |
+|---|---|---|
+| `<workspace>/SKILLS/` | Deep, categorized (`AI/AGENTS/...`) | Source of truth, version-controlled |
+| `~/.kiroskills/` | Same deep hierarchy | Master library, persists across all workspaces |
+| `~/.kiro/skills/` | Flat (`<skill-name>/SKILL.md`) | What Kiro actually reads. Auto-activation happens here. |
 
-```
-SKILLS/
-├── LANGUAGES/CSHARP/001-csharp-pro/
-│   ├── SKILL.md
-│   ├── references/
-│   ├── examples/
-│   └── scripts/
-├── WEB/SEO/001-seo-fundamentals/
-│   └── SKILL.md
-└── DEVTOOLS/BUILD/001-msbuild-server/
-    ├── SKILL.md
-    └── tutorials/
-```
+The extension keeps the first two in sync (workspace → user library, never deletes), then installs into the third on demand.
 
-Companion folders detected by default: `references`, `examples`, `tutorials`, `scripts`, `evals`, `assets`, `resources`, `templates`, `docs`, `fixtures`, `samples`. You can extend the list in settings.
+## How activation works
 
-## What it does
+Per the [Kiro docs](https://kiro.dev/docs/skills/):
+- Kiro reads the `name` and `description` from each SKILL.md frontmatter at startup
+- When your **chat message** matches a description, Kiro loads that skill's instructions
+- You can also invoke skills explicitly with `/skill-name`
 
-- Recursively scans `SKILLS/**/SKILL.md` (configurable).
-- Parses each skill's YAML frontmatter (`name`, `description`, `keywords`).
-- Records every companion file so the agent can pull them in.
-- Watches the SKILLS folder; re-indexes on changes.
-- **Trigger-word auto-toggle**: when the configured trigger word (default `SKILLS`, whole-word, case-sensitive) appears in the active document, matched skills are activated. If they're already active for that document, retyping the trigger deactivates them. Edge-triggered — typing past the word doesn't flap state.
-- **Status bar button**: click `$(book) Skills` in the status bar (or press `Ctrl+Alt+S`) to manually toggle skills for the current file regardless of trigger word.
-- Provides a sidebar tree view to browse skills and inspect companions.
-- Provides commands to open, search, manually activate/deactivate, or regenerate all steering files.
+This extension doesn't touch activation — it just makes sure skills are **present in the right place** with valid frontmatter, so Kiro's own matcher can do the work. That's why activation is deterministic: it's based on your chat message, not random scoring.
+
+## Behavior
+
+- On startup: scans `<workspace>/SKILLS/` and `~/.kiroskills/` and merges them into a unified index
+- On refresh: copies any new workspace skills into the user library (additive only)
+- On trigger: when the word `SKILLS` (whole-word, case-sensitive) appears in the active document for the first time, all indexed skills are **installed** into `~/.kiro/skills/`. Type `SKILLS` again later → uninstall.
+- Status bar: `$(book) Skills (global)` — click to toggle install. Shows count when installed.
+- Frontmatter normalization: install rewrites the COPY's `name:` to match the folder, fills in `description:` if missing. Source files are never modified.
 
 ## Settings
 
-| Setting | Default | Description |
+| Setting | Default | What |
 |---|---|---|
-| `kiroSkills.skillsRoot` | `SKILLS` | Workspace-relative path to the skills root. |
-| `kiroSkills.companionFolders` | see above | Folder names treated as companion content. |
-| `kiroSkills.autoSteering` | `true` | Auto-toggle steering when the trigger word is present. |
-| `kiroSkills.triggerWord` | `SKILLS` | Whole-word, case-sensitive trigger that gates auto-activation. |
-| `kiroSkills.steeringInclusion` | `fileMatch` | `fileMatch`, `manual`, or `always`. |
-| `kiroSkills.maxKeywordChars` | `6000` | Max chars of SKILL.md body embedded in a steering snippet. |
+| `kiroSkills.skillsRoot` | `SKILLS` | Workspace-relative library root. |
+| `kiroSkills.userSkillsRoot` | `~/.kiroskills` | User-level master library. |
+| `kiroSkills.syncToUserOnRefresh` | `true` | Auto-sync library on every refresh. |
+| `kiroSkills.installScope` | `global` | `global` = `~/.kiro/skills`. `workspace` = `<ws>/.kiro/skills`. |
+| `kiroSkills.autoInstall` | `true` | Auto-toggle on trigger word. |
+| `kiroSkills.triggerWord` | `SKILLS` | Whole-word, case-sensitive trigger. |
+| `kiroSkills.companionFolders` | `references, examples, tutorials, scripts, evals, assets, resources, templates, docs, fixtures, samples` | Folders treated as companion content. |
 
 ## Commands
 
 - **Skills: Refresh Index**
+- **Skills: Toggle Install** (status bar / `Ctrl+Alt+S`)
+- **Skills: Install All Into Kiro Skills Folder**
+- **Skills: Uninstall All From Kiro Skills Folder**
+- **Skills: Search by Keyword** (browse without installing)
 - **Skills: Open SKILL.md**
-- **Skills: Activate (write steering)**
-- **Skills: Deactivate (remove steering)**
-- **Skills: Regenerate All Steering Files**
-- **Skills: Search by Keyword**
-- **Skills: Toggle for Active File** — also bound to `Ctrl+Alt+S` and the status bar button.
+- **Skills: Sync Workspace To User Library**
+- **Skills: Open User Library Folder** (reveals `~/.kiroskills`)
+- **Skills: Open Kiro Install Folder** (reveals `~/.kiro/skills`)
 
-## Generated steering files
+## Build & install
 
-Files are namespaced as `skill--<category-slug>--<id>.md` so they never collide with hand-written steering files. Header comment marks them as machine-generated. The frontmatter inclusion mode controls when Kiro picks them up:
-
-- `fileMatch` — auto-derived patterns (e.g. `**/*.py` for Python skills).
-- `manual` — only via `#<file>` in chat.
-- `always` — always-on (use sparingly).
-
-## Build & run locally
-
-```bash
+```cmd
 cd extension
 npm install
-npm run compile
-# Run in VS Code: Press F5 ("Run Extension") with this folder open.
-# To package: npm run package  (produces kiro-skills-loader.vsix)
-# Then: code --install-extension kiro-skills-loader.vsix
+npm run package
+kiro --install-extension kiro-skills-loader.vsix --force
 ```
+
+Reload the window. Open any non-`SKILL.md` file, type `SKILLS`, watch the status bar count change. Reload Kiro after install for the skills to be picked up by Kiro's own discovery.
 
 ## Notes
 
-- The extension does not modify, rename, or move skill files. It only reads them and writes namespaced files inside `.kiro/steering/`.
-- Auto-activated skills are kept across sessions: on load, the extension reads `.kiro/steering/skill--*.md` to know what's already active.
-- Threshold for auto-activation is conservative (score ≥ 4) to avoid noise. Use **Skills: Search by Keyword** for manual control.
+- Frontmatter rewriting is in-copy only — your source SKILL.md files are never modified.
+- Kiro's spec requires `name: lowercase-letters-numbers-hyphens-only`, max 64 chars. The extension sanitizes names automatically (e.g. underscores → hyphens).
+- Idempotent: re-running install only updates files; never duplicates skills.
+- A manifest (`kiro-skills-loader.manifest.json`) inside the install folder tracks what's ours, so uninstall doesn't touch hand-written skills.

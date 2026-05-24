@@ -1,8 +1,8 @@
 {
   "name": "kiro-skills-loader",
   "displayName": "Kiro Skills Loader",
-  "description": "Hierarchical skill discovery for Kiro/VS Code with auto-activation by keyword matching, like steering files.",
-  "version": "0.1.0",
+  "description": "Maintain a hierarchical skills library and install all of them into Kiro's flat skills folder so Kiro auto-activates them by description matching.",
+  "version": "0.2.0",
   "publisher": "local",
   "license": "MIT",
   "engines": {
@@ -20,7 +20,7 @@
         "kiroSkills.skillsRoot": {
           "type": "string",
           "default": "SKILLS",
-          "description": "Workspace-relative path to the skills root folder."
+          "description": "Workspace-relative path to the skills root folder (the deep, hierarchical library)."
         },
         "kiroSkills.companionFolders": {
           "type": "array",
@@ -31,36 +31,31 @@
           ],
           "description": "Folder names treated as companion content next to SKILL.md."
         },
-        "kiroSkills.autoSteering": {
-          "type": "boolean",
-          "default": true,
-          "description": "Auto-toggle steering for keyword-matched skills when the trigger word is present in the document."
-        },
-        "kiroSkills.triggerWord": {
-          "type": "string",
-          "default": "SKILLS",
-          "description": "Auto-activation only fires when this exact word appears in the document. Whole-word, case-sensitive."
-        },
-        "kiroSkills.steeringInclusion": {
-          "type": "string",
-          "enum": ["fileMatch", "manual", "always"],
-          "default": "fileMatch",
-          "description": "How generated steering files are included. fileMatch = activate when matching files are open; manual = via #context; always = always-on."
-        },
-        "kiroSkills.maxKeywordChars": {
-          "type": "number",
-          "default": 6000,
-          "description": "Maximum characters of SKILL.md content embedded in a steering snippet."
-        },
         "kiroSkills.userSkillsRoot": {
           "type": "string",
           "default": "~/.kiroskills",
-          "description": "User-level skills folder. Skills found here are indexed alongside the workspace SKILLS folder. Use ~ for the home directory."
+          "description": "User-level master library (deep hierarchy preserved). This is NOT where Kiro looks for skills — see installScope. Use ~ for the home directory."
         },
         "kiroSkills.syncToUserOnRefresh": {
           "type": "boolean",
           "default": true,
-          "description": "On every refresh, copy any workspace skills not yet present in the user folder. Never deletes."
+          "description": "On every refresh, copy any new skills into the user library. Never deletes."
+        },
+        "kiroSkills.installScope": {
+          "type": "string",
+          "enum": ["global", "workspace"],
+          "default": "global",
+          "description": "Where to install skills so Kiro can discover them. global = ~/.kiro/skills (all workspaces). workspace = <ws>/.kiro/skills (this project only)."
+        },
+        "kiroSkills.autoInstall": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-toggle install when the trigger word is present in the active document."
+        },
+        "kiroSkills.triggerWord": {
+          "type": "string",
+          "default": "SKILLS",
+          "description": "Whole-word, case-sensitive trigger that toggles install/uninstall. Edge-triggered."
         }
       }
     },
@@ -75,33 +70,33 @@
         "title": "Skills: Open SKILL.md"
       },
       {
-        "command": "kiroSkills.activateSkill",
-        "title": "Skills: Activate (write steering)"
+        "command": "kiroSkills.toggleForActiveFile",
+        "title": "Skills: Toggle Install (uses current scope)",
+        "icon": "$(symbol-event)"
       },
       {
-        "command": "kiroSkills.deactivateSkill",
-        "title": "Skills: Deactivate (remove steering)"
+        "command": "kiroSkills.installAll",
+        "title": "Skills: Install All Into Kiro Skills Folder"
       },
       {
-        "command": "kiroSkills.regenerateSteering",
-        "title": "Skills: Regenerate All Steering Files"
+        "command": "kiroSkills.uninstallAll",
+        "title": "Skills: Uninstall All From Kiro Skills Folder"
       },
       {
         "command": "kiroSkills.searchByKeyword",
         "title": "Skills: Search by Keyword"
       },
       {
-        "command": "kiroSkills.toggleForActiveFile",
-        "title": "Skills: Toggle for Active File",
-        "icon": "$(symbol-event)"
-      },
-      {
         "command": "kiroSkills.syncToUser",
-        "title": "Skills: Sync Workspace Skills to User Folder"
+        "title": "Skills: Sync Workspace To User Library"
       },
       {
         "command": "kiroSkills.openUserFolder",
-        "title": "Skills: Open User Skills Folder"
+        "title": "Skills: Open User Library Folder"
+      },
+      {
+        "command": "kiroSkills.openKiroSkillsFolder",
+        "title": "Skills: Open Kiro Install Folder"
       }
     ],
     "keybindings": [
@@ -142,16 +137,6 @@
           "command": "kiroSkills.openSkill",
           "when": "view == kiroSkills.tree && viewItem == skill",
           "group": "1_open"
-        },
-        {
-          "command": "kiroSkills.activateSkill",
-          "when": "view == kiroSkills.tree && viewItem == skill",
-          "group": "2_activate"
-        },
-        {
-          "command": "kiroSkills.deactivateSkill",
-          "when": "view == kiroSkills.tree && viewItem == skill-active",
-          "group": "2_activate"
         }
       ]
     }
