@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { scanSkills } from "./scanner";
+import { scanSkills, scanSkillsMulti } from "./scanner";
 import { scoreSkills, tokenize } from "./matcher";
 import {
   purgeGeneratedSteering,
@@ -12,6 +12,7 @@ import {
 } from "./steering";
 import { SkillsTreeProvider } from "./tree";
 import { SkillRecord } from "./types";
+import { resolveUserRoot, syncWorkspaceToUser } from "./userSync";
 
 let skills: SkillRecord[] = [];
 let treeProvider: SkillsTreeProvider;
@@ -144,6 +145,30 @@ export function activate(context: vscode.ExtensionContext) {
       }
       void manualToggleForDocument(editor.document);
     }),
+    vscode.commands.registerCommand("kiroSkills.syncToUser", async () => {
+      const w = workspaceRoot();
+      if (!w) { vscode.window.showWarningMessage("No workspace open."); return; }
+      const cfg = vscode.workspace.getConfiguration("kiroSkills");
+      const rel = cfg.get<string>("skillsRoot", "SKILLS");
+      const userRoot = resolveUserRoot(cfg.get<string>("userSkillsRoot"));
+      const workspaceSkillsRoot = path.join(w, rel);
+      if (!fs.existsSync(workspaceSkillsRoot)) {
+        vscode.window.showWarningMessage(`Workspace skills root not found: ${workspaceSkillsRoot}`);
+        return;
+      }
+      const result = syncWorkspaceToUser(workspaceSkillsRoot, userRoot);
+      log(`Manual sync: copied ${result.copied}, skipped ${result.skipped}, dest ${result.userRoot}`);
+      vscode.window.showInformationMessage(
+        `Synced to ${result.userRoot} — copied ${result.copied}, skipped ${result.skipped}.`
+      );
+      void refreshIndex();
+    }),
+    vscode.commands.registerCommand("kiroSkills.openUserFolder", async () => {
+      const cfg = vscode.workspace.getConfiguration("kiroSkills");
+      const userRoot = resolveUserRoot(cfg.get<string>("userSkillsRoot"));
+      fs.mkdirSync(userRoot, { recursive: true });
+      await vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(userRoot));
+    }),
     vscode.commands.registerCommand("kiroSkills.searchByKeyword", async () => {
       const query = await vscode.window.showInputBox({
         prompt: "Search skills by keyword (e.g. 'react testing', 'sql injection')"
@@ -190,17 +215,41 @@ function currentSteeringOpts(): SteeringOptions {
 
 async function refreshIndex(showToast = false) {
   const w = workspaceRoot();
-  if (!w) return;
   const cfg = vscode.workspace.getConfiguration("kiroSkills");
   const rel = cfg.get<string>("skillsRoot", "SKILLS");
   const companions = cfg.get<string[]>("companionFolders", []);
-  const root = path.join(w, rel);
-  skills = scanSkills(root, companions);
+  const userRoot = resolveUserRoot(cfg.get<string>("userSkillsRoot"));
+  const autoSync = cfg.get<boolean>("syncToUserOnRefresh", true);
+
+  const roots: string[] = [];
+  if (w) {
+    const workspaceSkillsRoot = path.join(w, rel);
+    roots.push(workspaceSkillsRoot);
+    // Optional sync: copy any new workspace skills into the user folder.
+    if (autoSync && fs.existsSync(workspaceSkillsRoot)) {
+      try {
+        const result = syncWorkspaceToUser(workspaceSkillsRoot, userRoot);
+        if (result.copied > 0) {
+          log(`Synced ${result.copied} skills to ${userRoot} (${result.skipped} already present)`);
+        }
+      } catch (err) {
+        log(`User-folder sync failed: ${(err as Error).message}`);
+      }
+    }
+  }
+  // Always include the user folder so installed skills are available
+  // even when the workspace is unrelated to the SKILLS repo.
+  roots.push(userRoot);
+
+  skills = scanSkillsMulti(roots, companions);
   treeProvider.setSkills(skills);
-  // reload active set from existing generated steering files
-  activeIds = readActiveFromDisk(w);
-  treeProvider.setActive(activeIds);
-  log(`Indexed ${skills.length} skills under ${rel}`);
+
+  // reload active set from existing generated steering files (workspace-scoped)
+  if (w) {
+    activeIds = readActiveFromDisk(w);
+    treeProvider.setActive(activeIds);
+  }
+  log(`Indexed ${skills.length} skills (workspace + user folder)`);
   if (showToast) {
     vscode.window.showInformationMessage(`Indexed ${skills.length} skills.`);
   }

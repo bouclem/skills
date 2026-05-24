@@ -51,6 +51,16 @@
           "type": "number",
           "default": 6000,
           "description": "Maximum characters of SKILL.md content embedded in a steering snippet."
+        },
+        "kiroSkills.userSkillsRoot": {
+          "type": "string",
+          "default": "~/.kiroskills",
+          "description": "User-level skills folder. Skills found here are indexed alongside the workspace SKILLS folder. Use ~ for the home directory."
+        },
+        "kiroSkills.syncToUserOnRefresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "On every refresh, copy any workspace skills not yet present in the user folder. Never deletes."
         }
       }
     },
@@ -84,6 +94,14 @@
         "command": "kiroSkills.toggleForActiveFile",
         "title": "Skills: Toggle for Active File",
         "icon": "$(symbol-event)"
+      },
+      {
+        "command": "kiroSkills.syncToUser",
+        "title": "Skills: Sync Workspace Skills to User Folder"
+      },
+      {
+        "command": "kiroSkills.openUserFolder",
+        "title": "Skills: Open User Skills Folder"
       }
     ],
     "keybindings": [

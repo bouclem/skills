@@ -17,6 +17,29 @@ export function scanSkills(root: string, companionFolders: string[]): SkillRecor
   return records;
 }
 
+/**
+ * Scan multiple roots (e.g. workspace SKILLS/ + user ~/.kiroskills) and merge
+ * results. When the same skill id exists in more than one root, the first
+ * occurrence wins — pass workspace root first to give it priority.
+ */
+export function scanSkillsMulti(roots: string[], companionFolders: string[]): SkillRecord[] {
+  const seen = new Set<string>();
+  const out: SkillRecord[] = [];
+  for (const root of roots) {
+    if (!root) continue;
+    const records = scanSkills(root, companionFolders);
+    for (const r of records) {
+      // Dedup by category path + id, so two skills with the same id under
+      // different categories are kept distinct.
+      const key = [...r.category, r.id].join("/");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(r);
+    }
+  }
+  return out;
+}
+
 function walk(current: string, root: string, out: SkillRecord[], companionFolders: string[]) {
   let entries: fs.Dirent[];
   try {
