@@ -33,6 +33,7 @@ SKILLS/<CATEGORY>[/<SUBCATEGORY>]/<skill-folder>/
 | [MOBILE](SKILLS/MOBILE) | ANDROID, CROSS, REACT-NATIVE | 6 |
 | [OFFICE](SKILLS/OFFICE) | — | 2 |
 | [SECURITY](SKILLS/SECURITY) | AUDIT, PATTERNS, PENTEST, REVERSE | 29 |
+| [SQERSTERS](SKILLS/SQERSTERS) | — | 1 |
 | [WEB](SKILLS/WEB) | 3D, BACKEND, FRONTEND, FULLSTACK, OTHER, PERFORMANCE, SCRAPING, SEO, TESTING, UI | 156 |
 | [WIKI](SKILLS/WIKI) | — | 6 |
 | [WRITING](SKILLS/WRITING) | — | 4 |
@@ -101,6 +102,7 @@ SKILLS/
 │   ├── PATTERNS/       JWT, GDPR, threat modeling
 │   ├── PENTEST/        red team, fuzzing, SQL injection
 │   └── REVERSE/        reverse engineering, anti-RE
+├── SQERSTERS/          my own skills (made by me — SQERSTERS)
 ├── WEB/
 │   ├── 3D/             three.js, WebGL, R3F
 │   ├── BACKEND/        APIs, GraphQL, Node, payments
@@ -134,3 +136,28 @@ Each folder contains a `SKILL.md` with the activation keywords and full instruct
 - A skill goes in the **single category that fits it best** — no duplication.
 - Subcategories are uppercase. Skill folders keep the `001-` prefix.
 - Top-level categories without a clear subcategory split (e.g. `DATA`, `DATABASE`, `META`) hold skills directly.
+
+---
+
+## Steerings
+
+The `STEERINGS/` folder holds my personal AI steering rules — open-sourced so anyone can use or adapt them.
+
+```
+STEERINGS/
+└── SQERSTERS/          my own steering set (made by me — SQERSTERS)
+    ├── all_agent_new.md    global rules every agent must follow
+    ├── code_mastery.md     how I write, review, and improve code
+    ├── opensource.md       rules for open-source contributions
+    └── project_privates.md rules for private/personal projects
+```
+
+### How they work together
+
+- `all_agent_new.md` and `code_mastery.md` are always active.
+- `opensource.md` and `project_privates.md` are **mutually exclusive**:
+  - If `project_privates.md` is present in the project, **`opensource.md` does not apply**.
+  - Use `opensource.md` only when contributing to an external/open-source project.
+  - Use `project_privates.md` when the project is yours (full ownership, free to edit docs, etc.).
+
+Drop the files you want into your agent's steering folder (for example `~/.kiro/steering/`) to use them.
