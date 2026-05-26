@@ -1,6 +1,6 @@
 # Skills Library
 
-A categorized collection of **565 AI agent skills** organized by domain and technology.
+A categorized collection of **674 AI agent skills** organized by domain and technology.
 
 All skills live under `SKILLS/` and follow the standard Agent Skills layout:
 
@@ -19,22 +19,22 @@ SKILLS/<CATEGORY>[/<SUBCATEGORY>]/<skill-folder>/
 
 | Category | Subcategories | Skills |
 |---|---|---|
-| [AI](SKILLS/AI) | AGENTS, EVAL, IMAGE, LLM, ML, RAG | 47 |
+| [AI](SKILLS/AI) | AGENTS, EVAL, IMAGE, LLM, ML, RAG | 49 |
 | [ARCHITECTURE](SKILLS/ARCHITECTURE) | — | 7 |
-| [BUSINESS](SKILLS/BUSINESS) | ANALYTICS, FINANCE, LEGAL, MANAGEMENT, MARKETING, PRODUCT, STARTUP | 37 |
+| [BUSINESS](SKILLS/BUSINESS) | ANALYTICS, FINANCE, LEGAL, MANAGEMENT, MARKETING, PRODUCT, STARTUP | 38 |
 | [CLOUD](SKILLS/CLOUD) | AZURE, DEVOPS, KUBERNETES, SERVERLESS | 29 |
 | [DATA](SKILLS/DATA) | — | 22 |
-| [DATABASE](SKILLS/DATABASE) | — | 16 |
-| [DEVTOOLS](SKILLS/DEVTOOLS) | DEBUGGING, DOCS, ENV, REFACTORING, REVIEW, TESTING | 54 |
+| [DATABASE](SKILLS/DATABASE) | — | 17 |
+| [DEVTOOLS](SKILLS/DEVTOOLS) | BUILD, DEBUGGING, DOCS, ENV, REFACTORING, REVIEW, TESTING | 116 |
 | [FRAMEWORKS](SKILLS/FRAMEWORKS) | ALPINE, ANGULAR, ASTRO, ELECTRON, EXPO, REACT, VITE, VUE | 32 |
 | [GAMES](SKILLS/GAMES) | GENERAL, GODOT, HOI4, MINECRAFT, UNITY, UNREAL | 24 |
-| [LANGUAGES](SKILLS/LANGUAGES) | BASH, CPP, CSHARP, ELIXIR, GO, HASKELL, JAVA, JAVASCRIPT, JULIA, KOTLIN, LUA, OTHER, PHP, PYTHON, RUBY, RUST, SCALA, SWIFT, TYPESCRIPT | 72 |
-| [META](SKILLS/META) | — | 23 |
-| [MOBILE](SKILLS/MOBILE) | ANDROID, CROSS, REACT-NATIVE | 6 |
-| [OFFICE](SKILLS/OFFICE) | — | 2 |
-| [SECURITY](SKILLS/SECURITY) | AUDIT, PATTERNS, PENTEST, REVERSE | 29 |
+| [LANGUAGES](SKILLS/LANGUAGES) | BASH, CPP, CSHARP, ELIXIR, GO, HASKELL, JAVA, JAVASCRIPT, JULIA, KOTLIN, LUA, OTHER, PHP, PYTHON, RUBY, RUST, SCALA, SWIFT, TYPESCRIPT | 83 |
+| [META](SKILLS/META) | — | 26 |
+| [MOBILE](SKILLS/MOBILE) | ANDROID, CROSS, MAUI, REACT-NATIVE | 14 |
+| [OFFICE](SKILLS/OFFICE) | — | 9 |
+| [SECURITY](SKILLS/SECURITY) | AUDIT, PATTERNS, PENTEST, REVERSE | 28 |
 | [SQERSTERS](SKILLS/SQERSTERS) | — | 1 |
-| [WEB](SKILLS/WEB) | 3D, BACKEND, FRONTEND, FULLSTACK, OTHER, PERFORMANCE, SCRAPING, SEO, TESTING, UI | 156 |
+| [WEB](SKILLS/WEB) | 3D, BACKEND, FRONTEND, FULLSTACK, OTHER, PERFORMANCE, SCRAPING, SEO, TESTING, UI | 169 |
 | [WIKI](SKILLS/WIKI) | — | 6 |
 | [WRITING](SKILLS/WRITING) | — | 4 |
 
@@ -68,9 +68,10 @@ SKILLS/
 ├── DATA/               pandas, big data, ETL, scientific computing
 ├── DATABASE/           SQL, NoSQL, Postgres, ORMs
 ├── DEVTOOLS/
+│   ├── BUILD/          MSBuild, binlogs, templates, build perf
 │   ├── DEBUGGING/      debugging strategies, error handling
 │   ├── DOCS/           code/API documentation generators
-│   ├── ENV/            devcontainers, git, build, IDE
+│   ├── ENV/            devcontainers, git, build, IDE, GitHub, workspace
 │   ├── REFACTORING/    clean code, tech debt, modernization
 │   ├── REVIEW/         code review, audits
 │   └── TESTING/        TDD, unit testing, test frameworks
@@ -95,8 +96,9 @@ SKILLS/
 ├── MOBILE/
 │   ├── ANDROID/        Android, Jetpack Compose
 │   ├── CROSS/          cross-platform mobile
+│   ├── MAUI/           .NET MAUI
 │   └── REACT-NATIVE/   React Native architecture
-├── OFFICE/             PDF, office productivity
+├── OFFICE/             PDF, office productivity, Excel, Word, PowerPoint, Notion, Gmail, Calendar
 ├── SECURITY/
 │   ├── AUDIT/          security audits, compliance, hardening
 │   ├── PATTERNS/       JWT, GDPR, threat modeling
@@ -108,12 +110,12 @@ SKILLS/
 │   ├── BACKEND/        APIs, GraphQL, Node, payments
 │   ├── FRONTEND/       UI architecture, design taste, PWA
 │   ├── FULLSTACK/      end-to-end app building
-│   ├── OTHER/          browser extensions, bots
+│   ├── OTHER/          browser extensions, bots, weather, maps
 │   ├── PERFORMANCE/    web perf, profiling
-│   ├── SCRAPING/       browser automation, scraping
+│   ├── SCRAPING/       browser automation, web/wiki/arxiv search
 │   ├── SEO/            SEO, AEO, GEO, schema markup
 │   ├── TESTING/        API mocking, web testing
-│   └── UI/             design systems, components, CSS, animations
+│   └── UI/             design systems, components, CSS, animations, viz
 ├── WIKI/               codebase wikis, onboarding docs
 └── WRITING/            proofreading, scientific writing
 ```
