@@ -20,3 +20,4 @@ These rules apply ONLY when working on an open source project where the user is 
    - Keep the tone concise and natural, not AI-generated sounding
    - If no fork exists, fork the repo first, then open the PR
 7. **Code Styles** — Follow existing code style, patterns, and conventions strictly.
+8. **Never copy paste codes from others project** — don't copy paste codes from others project. Respect Licenses, Respect Contributing.md.

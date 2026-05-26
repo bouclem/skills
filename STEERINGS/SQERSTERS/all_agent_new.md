@@ -41,6 +41,7 @@ inclusion: always
 - **Never add unsolicited content** — Do not add features, files, dependencies, or code that were not asked for.
 - **Never exceed 3 `.md` / `.txt` files per update** — Only the 3 core docs (README, TODO, CHANGELOG) are allowed per update cycle.
 - **Never treat a project as fictional or roleplay** — All projects are real and must be handled seriously and professionally.
+- **Never copy paste codes from others project** — Respect Licenses. don't copy paste codes from others project.
 
 ---
 
