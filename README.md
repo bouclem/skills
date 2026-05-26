@@ -1,6 +1,6 @@
 # Skills Library
 
-A categorized collection of **674 AI agent skills** organized by domain and technology.
+A categorized collection of **676 AI agent skills** organized by domain and technology.
 
 All skills live under `SKILLS/` and follow the standard Agent Skills layout:
 
@@ -33,7 +33,7 @@ SKILLS/<CATEGORY>[/<SUBCATEGORY>]/<skill-folder>/
 | [MOBILE](SKILLS/MOBILE) | ANDROID, CROSS, MAUI, REACT-NATIVE | 14 |
 | [OFFICE](SKILLS/OFFICE) | — | 9 |
 | [SECURITY](SKILLS/SECURITY) | AUDIT, PATTERNS, PENTEST, REVERSE | 28 |
-| [SQERSTERS](SKILLS/SQERSTERS) | — | 1 |
+| [SQERSTERS](SKILLS/SQERSTERS) | — | 3 |
 | [WEB](SKILLS/WEB) | 3D, BACKEND, FRONTEND, FULLSTACK, OTHER, PERFORMANCE, SCRAPING, SEO, TESTING, UI | 169 |
 | [WIKI](SKILLS/WIKI) | — | 6 |
 | [WRITING](SKILLS/WRITING) | — | 4 |
@@ -163,3 +163,46 @@ STEERINGS/
   - Use `project_privates.md` when the project is yours (full ownership, free to edit docs, etc.).
 
 Drop the files you want into your agent's steering folder (for example `~/.kiro/steering/`) to use them.
+
+---
+
+## Building a flat zip for installation
+
+Some agents (Kiro included) only read skill folders at the **root** of their skills directory — they don't recurse into category subfolders. To install this whole library into such an agent, build a flat zip first:
+
+```powershell
+# From the repo root
+powershell -ExecutionPolicy Bypass -File scripts\Build-SkillsZip.ps1 -Force
+```
+
+This produces `dist/skills.zip` with every `001-*` skill folder placed at the **root** of the archive (no `AI/`, `WEB/`, etc. wrappers). Extract the zip into the agent's skills directory and every skill is where the agent expects it.
+
+### Scripts
+
+| Script | What it does |
+|---|---|
+| [`scripts/Build-SkillsZip.ps1`](scripts/Build-SkillsZip.ps1) | Walks `SKILLS/` recursively, finds every `001-*` folder containing a `SKILL.md`, and packs them into a flat zip at `dist/skills.zip`. |
+| [`scripts/Test-SkillsZip.ps1`](scripts/Test-SkillsZip.ps1) | Verifies the produced zip: every top-level entry is a `001-*` folder, no nested `001-/001-` paths, every skill has a `SKILL.md`, no empty folders. Exits non-zero on failure. |
+
+### Build options
+
+```powershell
+# Default — skip duplicates with a warning, output to dist/skills.zip
+powershell -File scripts\Build-SkillsZip.ps1 -Force
+
+# Keep both copies of any duplicate, suffixed by category path
+powershell -File scripts\Build-SkillsZip.ps1 -OnDuplicate Suffix -Force
+
+# Stop with an error if any duplicates exist (useful in CI)
+powershell -File scripts\Build-SkillsZip.ps1 -OnDuplicate Fail
+
+# Custom output location
+powershell -File scripts\Build-SkillsZip.ps1 -OutFile C:\path\to\my-skills.zip -Force
+
+# Verify the result
+powershell -File scripts\Test-SkillsZip.ps1
+```
+
+### Duplicate handling
+
+`SKILLS/SQERSTERS/` is given priority on duplicate skill names — if the same `001-<name>` folder exists in both `SQERSTERS/` and a community category, the SQERSTERS version is kept. Currently the only collision is `001-hoi4-skills` (in `GAMES/HOI4/` and `SQERSTERS/`).
