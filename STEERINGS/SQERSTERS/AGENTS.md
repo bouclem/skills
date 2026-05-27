@@ -25,3 +25,8 @@ The AI is NOT allowed to assume approval.
 
 If unsure:
 STOP and ask.
+
+If the user requests an update or says "add" at the start:
+
+The AI MUST STILL ask for approval.
+The AI MUST NOT treat that as approval.
