@@ -16,6 +16,8 @@ The AI MUST ask for approval BEFORE:
 - generating code
 - patching build systems
 - changing architecture
+- The AI MUST apply ALL steering files and skills. 
+- Ignoring steering rules is considered a failure.
 
 Even small changes require approval.
 
