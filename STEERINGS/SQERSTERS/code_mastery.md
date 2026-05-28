@@ -1,7 +1,5 @@
 ---
-
 inclusion: always
-
 ---
 
 # Code Mastery
