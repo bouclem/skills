@@ -1,6 +1,6 @@
 # Skills Library
 
-A categorized collection of **676 AI agent skills** organized by domain and technology.
+A categorized collection of **677 AI agent skills** organized by domain and technology.
 
 All skills live under `SKILLS/` and follow the standard Agent Skills layout:
 
@@ -36,7 +36,7 @@ SKILLS/<CATEGORY>[/<SUBCATEGORY>]/<skill-folder>/
 | [SQERSTERS](SKILLS/SQERSTERS) | — | 3 |
 | [WEB](SKILLS/WEB) | 3D, BACKEND, FRONTEND, FULLSTACK, OTHER, PERFORMANCE, SCRAPING, SEO, TESTING, UI | 169 |
 | [WIKI](SKILLS/WIKI) | — | 6 |
-| [WRITING](SKILLS/WRITING) | — | 4 |
+| [WRITING](SKILLS/WRITING) | — | 5 |
 
 ---
 
