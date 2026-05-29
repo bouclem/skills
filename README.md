@@ -1,6 +1,6 @@
 # Skills Library
 
-A categorized collection of **677 AI agent skills** organized by domain and technology.
+A categorized collection of **684 AI agent skills** organized by domain and technology.
 
 All skills live under `SKILLS/` and follow the standard Agent Skills layout:
 
@@ -19,7 +19,7 @@ SKILLS/<CATEGORY>[/<SUBCATEGORY>]/<skill-folder>/
 
 | Category | Subcategories | Skills |
 |---|---|---|
-| [AI](SKILLS/AI) | AGENTS, EVAL, IMAGE, LLM, ML, RAG | 49 |
+| [AI](SKILLS/AI) | AGENTS, EVAL, IMAGE, LLM, ML, RAG | 52 |
 | [ARCHITECTURE](SKILLS/ARCHITECTURE) | — | 7 |
 | [BUSINESS](SKILLS/BUSINESS) | ANALYTICS, FINANCE, LEGAL, MANAGEMENT, MARKETING, PRODUCT, STARTUP | 38 |
 | [CLOUD](SKILLS/CLOUD) | AZURE, DEVOPS, KUBERNETES, SERVERLESS | 29 |
@@ -34,7 +34,7 @@ SKILLS/<CATEGORY>[/<SUBCATEGORY>]/<skill-folder>/
 | [OFFICE](SKILLS/OFFICE) | — | 9 |
 | [SECURITY](SKILLS/SECURITY) | AUDIT, PATTERNS, PENTEST, REVERSE | 28 |
 | [SQERSTERS](SKILLS/SQERSTERS) | — | 3 |
-| [WEB](SKILLS/WEB) | 3D, BACKEND, FRONTEND, FULLSTACK, OTHER, PERFORMANCE, SCRAPING, SEO, TESTING, UI | 169 |
+| [WEB](SKILLS/WEB) | 3D, BACKEND, FRONTEND, FULLSTACK, OTHER, PERFORMANCE, SCRAPING, SEO, TESTING, UI | 173 |
 | [WIKI](SKILLS/WIKI) | — | 6 |
 | [WRITING](SKILLS/WRITING) | — | 5 |
 

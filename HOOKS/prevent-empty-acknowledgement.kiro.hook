@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "name": "Prevent Empty Acknowledgements",
+  "description": "Détecte quand l'agent s'arrête et force à continuer si du travail est en attente.",
+  "version": "2",
+  "when": {"type": "agentStop"},
+  "then": {
+    "type": "askAgent",
+    "prompt": "SELF-CHECK: You just stopped. Review the conversation — did the user ask you to do something that you haven't done yet? Did they say 'keep going', 'continue', or similar? If there is pending work, DO IT NOW instead of stopping. If you genuinely completed everything the user asked for, this check is satisfied and you can stop.\nCRITICAL: If there IS pending work, your response MUST contain at least one tool call (readFile, fsWrite, executeBash, etc.). Responding ONLY with text like 'understood' is FORBIDDEN."
+  }
+}
