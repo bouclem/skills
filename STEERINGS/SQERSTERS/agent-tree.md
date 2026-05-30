@@ -1,3 +1,7 @@
+---
+inclusion: always
+---
+
 # Agent Tree
 
 ## Goal
@@ -13,7 +17,17 @@ The objective is to:
 
 ---
 
-# Structure
+## Agent Protocol
+
+- At task start, read `context/` and `metadata/` first — never re-scan the whole project if a summary exists.
+- Load only summaries relevant to the current task. Do not read the entire tree.
+- Mid-task, append new findings to `memory/`, `ideas/`, or `research/` instead of repeating them in chat.
+- After changing files, mark affected `context/` summaries stale via `refresh/`.
+- Only write to the tree when the user enables it or explicitly asks to remember something.
+
+---
+
+## Structure
 
 When enabled, the system creates:
 
@@ -29,13 +43,14 @@ agent-tree/
 ├── memory/
 ├── context/
 ├── refresh/
+├── ideas/
 ├── research/
 └── metadata/
 ```
 
 ---
 
-# memory/
+## memory/
 
 Stores persistent memories explicitly requested by the user.
 
@@ -64,7 +79,7 @@ memory/
 
 ---
 
-# context/
+## context/
 
 Stores summarized project understanding.
 
@@ -103,7 +118,7 @@ context/
 
 ---
 
-# refresh/
+## refresh/
 
 Handles automatic context refreshing.
 
@@ -128,7 +143,7 @@ refresh/
 ```
 ---
 
-# ideas/
+## ideas/
 
 Stores project ideas, concepts, future plans, experimental thoughts, and AI-generated suggestions.
 
@@ -210,7 +225,7 @@ Possible idea states:
 
 ---
 
-# research/
+## research/
 
 Stores external knowledge related to the project.
 
@@ -256,7 +271,7 @@ research/
 
 ---
 
-# metadata/
+## metadata/
 
 Stores internal metadata used by the system.
 
@@ -279,7 +294,7 @@ metadata/
 
 ---
 
-# Auto Refresh
+## Auto Refresh
 
 The system may automatically refresh summaries when:
 - files are modified
@@ -296,7 +311,7 @@ The refresh system should:
 
 ---
 
-# Context Aging
+## Context Aging
 
 Context summaries become older over time.
 
@@ -320,7 +335,58 @@ The older a summary becomes:
 
 ---
 
-# Benefits
+## Core Capabilities
+
+These are active behaviors of the tree, not future ideas. The agent should use them whenever the tree is enabled.
+
+## Importance Ranking
+
+Ranks files and systems by relevance so the agent loads what matters first.
+
+- Score each summarized file/system by how often it is touched, how many other parts depend on it, and how central it is to the current task.
+- Read high-importance summaries before low-importance ones; skip irrelevant ones entirely.
+- Store scores in `metadata/importance-map.json` and update them when files change or a task shifts focus.
+- Use the ranking to decide what to refresh first when context goes stale.
+
+## Smart Loading
+
+Loads only the summaries relevant to the task instead of the whole tree.
+
+- Match the task to its related systems, then pull only those `context/` entries plus their direct dependencies.
+- Prefer summaries over raw files; open raw files only when a summary is missing or marked stale.
+- Respect a context budget — load the smallest set that still answers the task.
+- Fall back to a targeted search (see Semantic Search) rather than a full project scan.
+
+## Semantic Search
+
+Searches through summaries by meaning instead of scanning the full project.
+
+- Query the `context/`, `memory/`, and `research/` summaries first, matching on concepts rather than exact filenames.
+- Return the most relevant summaries ranked by importance, with a link back to the source file or system.
+- Only escalate to a raw file read or full scan when the search returns nothing useful.
+- Keep this the default lookup path — it is the main token-saving mechanism of the tree.
+
+## Research Linking
+
+Connects research files to the systems and code they relate to.
+
+- When a `research/` note is created or updated, link it to the related files, folders, or systems under `context/`.
+- Maintain back-links so opening a system summary surfaces the research attached to it.
+- Reuse existing research before searching the internet again for the same topic.
+- Mark research that has gone stale when the linked code changes significantly.
+
+## Dependency Mapping
+
+Builds relationship maps between systems and files.
+
+- Track which files and systems depend on which, and store the graph in `metadata/dependency-tree.json`.
+- Use the map to decide refresh order — when one file changes, mark everything that depends on it stale.
+- Surface dependants during Smart Loading so related context comes along with the primary target.
+- Keep the map updated when files are added, removed, or reorganized.
+
+---
+
+## Benefits
 
 - lower credit usage
 - less repeated analysis
@@ -331,38 +397,23 @@ The older a summary becomes:
 - improved research continuity
 - more stable agent memory
 - improved multi-agent coordination
+- relevant context first, via importance ranking
+- minimal context loaded per task, via smart loading
+- meaning-based lookups that avoid full project scans, via semantic search
+- research reused and tied to the code it explains, via research linking
+- accurate refreshes that follow real dependencies, via dependency mapping
 
 ---
 
-# Future Ideas
-
-## Importance Ranking
-
-Ranks files and systems by relevance.
-
-## Smart Loading
-
-Loads only relevant summaries depending on the task.
+## Future Ideas
 
 ## Multi-Agent Shared Context
 
 Allows multiple agents to share the same contextual tree.
 
-## Dependency Mapping
-
-Creates relationship maps between systems and files.
-
 ## Context Compression
 
 Compresses old summaries into smaller memory-efficient forms.
-
-## Semantic Search
-
-Search through summaries instead of scanning the full project.
-
-## Research Linking
-
-Automatically connects research files to related systems and code files.
 
 ## Hybrid Knowledge Graph
 
